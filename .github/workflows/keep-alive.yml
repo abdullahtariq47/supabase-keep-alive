@@ -12,17 +12,17 @@ jobs:
       - name: Check secrets and ping Supabase
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: |
-          if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_ANON_KEY" ]; then
-            echo "Error: Secrets SUPABASE_URL and SUPABASE_ANON_KEY are missing."
+          if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_SERVICE_KEY" ]; then
+            echo "Error: Secrets SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are missing."
             exit 1
           fi
           
           echo "Pinging Supabase to keep it active..."
           HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X GET "${SUPABASE_URL}/rest/v1/" \
-            -H "apikey: ${SUPABASE_ANON_KEY}" \
-            -H "Authorization: Bearer ${SUPABASE_ANON_KEY}")
+            -H "apikey: ${SUPABASE_SERVICE_KEY}" \
+            -H "Authorization: Bearer ${SUPABASE_SERVICE_KEY}")
             
           if [ "$HTTP_STATUS" -eq 200 ]; then
             echo "Ping successful! Supabase project is active."
@@ -30,8 +30,8 @@ jobs:
             echo "Ping failed with status $HTTP_STATUS."
             echo "Here is the exact error from Supabase:"
             curl -s -X GET "${SUPABASE_URL}/rest/v1/" \
-              -H "apikey: ${SUPABASE_ANON_KEY}" \
-              -H "Authorization: Bearer ${SUPABASE_ANON_KEY}"
+              -H "apikey: ${SUPABASE_SERVICE_KEY}" \
+              -H "Authorization: Bearer ${SUPABASE_SERVICE_KEY}"
             echo ""
             exit 1
           fi
